@@ -4,25 +4,24 @@ import fs from 'fs'
 import { spawn } from 'child_process'
 import crypto from 'crypto'
 import cors from 'cors'
-
 import ytsr from 'ytsr'
-
 import findRemoveSync from 'find-remove'
-
 import path from 'path'
 
-setInterval(() => {
-  findRemoveSync(path.join(__dirname, '/uploads'), { age: { seconds: 3600 }, files: '*.*' })
-}, 1800)
-
 const app = express()
+app.use(cors({
+  origin: '*'
+}
+))
+app.options('*', cors())
 const port = 10000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors({
-  origin: '*'
-}))
+
+setInterval(() => {
+  findRemoveSync(path.join(__dirname, '/uploads'), { age: { seconds: 3600 }, files: '*.*' })
+}, 1800)
 
 app.post('/convertSong', (req, res) => {
   const URL = req.body.link

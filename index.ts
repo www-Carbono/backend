@@ -1,7 +1,7 @@
 import express from 'express'
 import ytdl from 'ytdl-core'
 import fs from 'fs'
-import { exec } from 'child_process'
+import { spawn } from 'child_process'
 import crypto from 'crypto'
 import cors from 'cors'
 
@@ -40,42 +40,43 @@ app.post('/convertSong', (req, res) => {
           const pathOutput = path.join(__dirname, 'uploads', randomName)
 
           const command = `ffmpeg -i ${pathTemp}.wav -af asetrate=44100*${pitch},aresample=44100,atempo=${tempo} ${pathOutput}.wav`
-          // const commandParts = command.split(' ')
-          // const spawnedProcess = spawn(commandParts[0], commandParts.slice(1))
+          const commandParts = command.split(' ')
+          const spawnedProcess = spawn(commandParts[0], commandParts.slice(1))
 
-          exec(command, (error, stdout, stderr) => {
-            if (error !== null) {
-              console.error(`Error: ${error.message}`)
-              return res.status(500).json({
-                error: `Error executing command: ${error.message}`
-              })
-            }
-            fs.unlink(`./tmp/${randomName}.wav`, () => {})
-            return res.status(200).json({
-              nombre: SongName[0],
-              fileName: randomName
-            })
-          })
-          // spawnedProcess.on('error', (error) => {
-          //   console.error(`Error: ${error.message}`)
-          //   return res.status(500).json({
-          //     error: `Error executing command: ${error.message}`
-          //   })
-          // })
-          // spawnedProcess.on('exit', (code: any) => {
-          //   if (code !== 0) {
-          //     console.error(`Command failed with code ${code}`)
+          // exec(command, (error, stdout, stderr) => {
+          //   if (error !== null) {
+          //     console.error(`Error: ${error.message}`)
           //     return res.status(500).json({
-          //       error: `Command failed with code ${code}`
+          //       error: `Error executing command: ${error.message}`
           //     })
           //   }
           //   fs.unlink(`./tmp/${randomName}.wav`, () => {})
-
           //   return res.status(200).json({
           //     nombre: SongName[0],
           //     fileName: randomName
           //   })
           // })
+
+          spawnedProcess.on('error', (error: any) => {
+            console.error(`Error: ${error.message}`)
+            return res.status(500).json({
+              error: `Error executing command: ${error.message}`
+            })
+          })
+          spawnedProcess.on('exit', (code: any) => {
+            if (code !== 0) {
+              console.error(`Command failed with code ${code}`)
+              return res.status(500).json({
+                error: `Command failed with code ${code}`
+              })
+            }
+            fs.unlink(`./tmp/${randomName}.wav`, () => {})
+
+            return res.status(200).json({
+              nombre: SongName[0],
+              fileName: randomName
+            })
+          })
         }, 1000)
       })
 
@@ -125,6 +126,7 @@ app.listen(port, () => {
 
 const downloadVideo = async (link: string, randomName: string, SongName: string[]): Promise<void> => {
   try {
+    console.log(path.join(__dirname, 'tmp', randomName + '.wav'))
     const regex = /^https?:\/\/(?:www\.)?youtube\.com\/.*$/
     if (!regex.test(link)) {
       const regex2 = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/

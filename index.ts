@@ -39,7 +39,7 @@ app.post('/convertSong', (req, res) => {
           const pathTemp = path.join(__dirname, 'tmp', randomName)
           const pathOutput = path.join(__dirname, 'uploads', randomName)
 
-          const command = `C:/ffmpeg/bin/ffmpeg -i ${pathTemp}.wav -af asetrate=44100*${pitch},aresample=44100,atempo=${tempo} ${pathOutput}.wav`
+          const command = `ffmpeg -i ${pathTemp}.wav -af asetrate=44100*${pitch},aresample=44100,atempo=${tempo} ${pathOutput}.wav`
           exec(command, (error, stdout, stderr) => {
             if (error !== null) {
               console.error(`Error: ${error.message}`)

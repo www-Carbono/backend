@@ -107,7 +107,7 @@ const downloadVideo = async (link: string, randomName: string, SongName: string[
       const regex2 = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/
       if (regex2.test(link)) {
         ytdl('https://' + link, { filter: 'audioonly' })
-          .pipe(fs.createWriteStream(`./tmp/${randomName}.wav`))
+          .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName, '.wav')))
 
         const name = await ytdl.getInfo('https://' + link)
         SongName.push(name.videoDetails.title)
@@ -116,7 +116,7 @@ const downloadVideo = async (link: string, randomName: string, SongName: string[
       }
     } else {
       ytdl(link, { filter: 'audioonly' })
-        .pipe(fs.createWriteStream(`./tmp/${randomName}.wav`))
+        .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName, '.wav')))
 
       const name = await ytdl.getInfo(link)
       SongName.push(name.videoDetails.title)

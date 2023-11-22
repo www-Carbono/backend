@@ -9,11 +9,7 @@ import findRemoveSync from 'find-remove'
 import path from 'path'
 
 const app = express()
-app.use(cors({
-  origin: 'http://localhost:3000/'
-}
-))
-app.options('*', cors())
+app.use(cors())
 const port = 10000
 
 app.use(express.json())

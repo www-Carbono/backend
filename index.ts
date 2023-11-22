@@ -40,6 +40,9 @@ app.post('/convertSong', (req, res) => {
           const pathOutput = path.join(__dirname, 'uploads', randomName)
 
           const command = `ffmpeg -i ${pathTemp}.wav -af asetrate=44100*${pitch},aresample=44100,atempo=${tempo} ${pathOutput}.wav`
+          // const commandParts = command.split(' ')
+          // const spawnedProcess = spawn(commandParts[0], commandParts.slice(1))
+
           exec(command, (error, stdout, stderr) => {
             if (error !== null) {
               console.error(`Error: ${error.message}`)
@@ -53,6 +56,26 @@ app.post('/convertSong', (req, res) => {
               fileName: randomName
             })
           })
+          // spawnedProcess.on('error', (error) => {
+          //   console.error(`Error: ${error.message}`)
+          //   return res.status(500).json({
+          //     error: `Error executing command: ${error.message}`
+          //   })
+          // })
+          // spawnedProcess.on('exit', (code: any) => {
+          //   if (code !== 0) {
+          //     console.error(`Command failed with code ${code}`)
+          //     return res.status(500).json({
+          //       error: `Command failed with code ${code}`
+          //     })
+          //   }
+          //   fs.unlink(`./tmp/${randomName}.wav`, () => {})
+
+          //   return res.status(200).json({
+          //     nombre: SongName[0],
+          //     fileName: randomName
+          //   })
+          // })
         }, 1000)
       })
 
@@ -107,7 +130,7 @@ const downloadVideo = async (link: string, randomName: string, SongName: string[
       const regex2 = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/
       if (regex2.test(link)) {
         ytdl('https://' + link, { filter: 'audioonly' })
-          .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName, '.wav')))
+          .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName + '.wav')))
 
         const name = await ytdl.getInfo('https://' + link)
         SongName.push(name.videoDetails.title)
@@ -116,7 +139,7 @@ const downloadVideo = async (link: string, randomName: string, SongName: string[
       }
     } else {
       ytdl(link, { filter: 'audioonly' })
-        .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName, '.wav')))
+        .pipe(fs.createWriteStream(path.join(__dirname, 'tmp', randomName + '.wav')))
 
       const name = await ytdl.getInfo(link)
       SongName.push(name.videoDetails.title)

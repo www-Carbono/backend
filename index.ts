@@ -10,7 +10,7 @@ import path from 'path'
 
 const app = express()
 app.use(cors())
-const port = 10000
+const port = 3046
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

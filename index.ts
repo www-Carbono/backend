@@ -3,14 +3,13 @@ import ytdl from 'ytdl-core'
 import fs from 'fs'
 import { spawn } from 'child_process'
 import crypto from 'crypto'
-import cors from 'cors'
+// import cors from 'cors'
 import ytsr from 'ytsr'
 import findRemoveSync from 'find-remove'
 import path from 'path'
 
 const app = express()
-app.use(cors())
-const port = 3046
+const port = 10000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -20,6 +19,7 @@ setInterval(() => {
 }, 1800)
 
 app.post('/convertSong', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
   const URL = req.body.link
   const tempo = req.body.tempo
   const pitch = req.body.pitch
@@ -89,11 +89,15 @@ app.post('/convertSong', (req, res) => {
 })
 
 app.get('/download/:id', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+
   const file = `./uploads/${req.params.id}.wav`
   res.download(file)
 })
 
 app.post('/youtubeSearch', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+
   const search = req.body.search
   youtubeSearch(search)
     .then(e => {
